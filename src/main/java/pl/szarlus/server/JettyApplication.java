@@ -2,6 +2,7 @@ package pl.szarlus.server;
 
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -21,6 +22,7 @@ public class JettyApplication {
     private static final String CONTEXT_PATH = "/";
     private static final String CONFIG_LOCATION = "pl.szarlus.config";
     private static final String MAPPING_URL = "/*";
+
 
     public static void main(String[] args) {
         int port = getPortFromArgs(args);
@@ -46,7 +48,7 @@ public class JettyApplication {
         logger.debug("Starting server at port {}", port);
         Server server = new Server(port);
 
-        ServletContextHandler contextHandler = new ServletContextHandler();
+        ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
 
         AnnotationConfigWebApplicationContext webApplicationContext = new AnnotationConfigWebApplicationContext();
         webApplicationContext.setConfigLocation(CONFIG_LOCATION);
@@ -58,13 +60,13 @@ public class JettyApplication {
 
         handlers.setHandlers(new Handler[] {
                 contextHandler,
-//                new DefaultHandler()
+                new DefaultHandler()
         });
 
         server.setHandler(handlers);
 
         server.start();
-        server.dumpStdErr();
+//        server.dumpStdErr();
         logger.info("Server started at port {}", port);
         server.join();
     }
